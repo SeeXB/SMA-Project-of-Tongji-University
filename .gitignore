@@ -5,3 +5,5 @@
 *__pycache__*
 Canvas AI Subsystem - Fixed & Guaranteed.postman_test_run.json
 resources/
+*target/
+*.DS_Store*
