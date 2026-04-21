@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: course-service
+
+server:
+  port: 8081
+
+canvas:
+  adapter:
+    base-url: http://canvas-adapter-service
+
+ai:
+  gateway:
+    base-url: http://localhost:8000

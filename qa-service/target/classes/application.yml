@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: qa-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/qa_db
+    username: qa_user
+    password: qa_password
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+server:
+  port: 8083

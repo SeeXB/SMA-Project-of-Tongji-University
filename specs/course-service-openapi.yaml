@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Course Service API
+  version: 1.0.0
+  description: >
+    OpenAPI contract for the Canvas AI-Enhanced Course Service. The service owns
+    course-related business orchestration and delegates inference to the AI Gateway.
+servers:
+  - url: http://localhost:8081
+paths:
+  /course/summarize:
+    post:
+      summary: Summarize uploaded course slides
+      description: >
+        Accepts a Canvas file reference and user context, validates the caller,
+        loads the slide content through a Canvas adapter, and returns an AI-generated summary.
+      operationId: summarizeCourseSlides
+      tags:
+        - Course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SummarizeCourseRequest'
+            examples:
+              default:
+                value:
+                  fileId: file_98765
+                  courseId: course_cs101
+                  userId: student_123
+                  accessToken: mock-token-student-123
+                  preferredLanguage: English
+      responses:
+        '200':
+          description: Summary generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummarizeCourseResponse'
+              examples:
+                default:
+                  value:
+                    fileId: file_98765
+                    courseId: course_cs101
+                    summaryText: >
+                      This slide deck introduces bounded contexts, aggregates, repositories,
+                      and anti-corruption layers as the core building blocks of DDD.
+                    generatedBy: mock:mock-llm
+                    traceId: 7a95fe77-d0fb-4ed0-87e8-efda7bd54080
+        '400':
+          description: Invalid request or token validation failure
+components:
+  schemas:
+    SummarizeCourseRequest:
+      type: object
+      required:
+        - fileId
+        - courseId
+        - userId
+        - accessToken
+      properties:
+        fileId:
+          type: string
+          description: Canvas file identifier for the uploaded slide deck
+        courseId:
+          type: string
+          description: Business course identifier scoped to the Course Service
+        userId:
+          type: string
+          description: Authenticated Canvas user identifier
+        accessToken:
+          type: string
+          description: Bearer-style token issued by the upstream access layer
+        preferredLanguage:
+          type: string
+          description: Optional language hint for summary generation
+          default: English
+    SummarizeCourseResponse:
+      type: object
+      required:
+        - fileId
+        - courseId
+        - summaryText
+        - generatedBy
+        - traceId
+      properties:
+        fileId:
+          type: string
+        courseId:
+          type: string
+        summaryText:
+          type: string
+          description: Final natural-language summary returned to the caller
+        generatedBy:
+          type: string
+          description: AI provider and model metadata for observability
+        traceId:
+          type: string
+          description: Correlation id for distributed tracing

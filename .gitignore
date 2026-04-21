@@ -1,0 +1,7 @@
+.env
+.run/
+*.venv*
+*.pdf
+*__pycache__*
+Canvas AI Subsystem - Fixed & Guaranteed.postman_test_run.json
+resources/

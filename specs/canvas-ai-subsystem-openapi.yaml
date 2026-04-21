@@ -1,0 +1,608 @@
+openapi: 3.0.3
+info:
+  title: Canvas AI-Enhanced Subsystem API
+  version: 1.0.0
+  description: >
+    Unified contract for the six-core-microservice Canvas AI-Enhanced Subsystem.
+    Business services own domain workflows and relational data, AI Gateway owns
+    model orchestration, and RAG Service owns vector storage and retrieval.
+servers:
+  - url: http://localhost:9000
+    description: Unified API gateway
+  - url: http://localhost
+    description: Direct service access
+tags:
+  - name: Course Service
+  - name: Assignment Service
+  - name: QA Service
+  - name: Moderation Service
+  - name: AI Gateway Service
+  - name: RAG Service
+paths:
+  /course/summarize:
+    post:
+      tags: [Course Service]
+      summary: Summarize course slides
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseSummarizeRequest'
+      responses:
+        '200':
+          description: Slide summary generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseSummarizeResponse'
+  /course/generate-quiz:
+    post:
+      tags: [Course Service]
+      summary: Generate formative quiz questions from course material
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseGenerateQuizRequest'
+      responses:
+        '200':
+          description: Quiz generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseGenerateQuizResponse'
+  /assignment/guiding:
+    post:
+      tags: [Assignment Service]
+      summary: Generate assignment guidance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentGuidingRequest'
+      responses:
+        '200':
+          description: Guidance generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentGuidingResponse'
+  /assignment/grading:
+    post:
+      tags: [Assignment Service]
+      summary: Generate grading suggestions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentGradingRequest'
+      responses:
+        '200':
+          description: Grading suggestions generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentGradingResponse'
+  /assignment/detect-ai:
+    post:
+      tags: [Assignment Service]
+      summary: Detect AI-generated characteristics in assignment content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentDetectAiRequest'
+      responses:
+        '200':
+          description: AI detection completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentDetectAiResponse'
+  /qa/ask:
+    post:
+      tags: [QA Service]
+      summary: Ask a question about course content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QaAskRequest'
+      responses:
+        '200':
+          description: Answer returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QaAskResponse'
+  /qa/history-list:
+    get:
+      tags: [QA Service]
+      summary: List QA session history
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: courseId
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: History listed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QaHistoryListResponse'
+  /qa/history/{history_id}:
+    get:
+      tags: [QA Service]
+      summary: Get a QA conversation history
+      parameters:
+        - in: path
+          name: history_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: QA history detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QaHistoryDetailResponse'
+  /moderation/text:
+    post:
+      tags: [Moderation Service]
+      summary: Moderate plain text content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationTextRequest'
+      responses:
+        '200':
+          description: Text moderation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationTextResponse'
+  /moderation/file:
+    post:
+      tags: [Moderation Service]
+      summary: Moderate uploaded file content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerationFileRequest'
+      responses:
+        '200':
+          description: File moderation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModerationFileResponse'
+  /ai/infer-sync:
+    post:
+      tags: [AI Gateway Service]
+      summary: Run synchronous model inference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiInferSyncRequest'
+      responses:
+        '200':
+          description: Inference completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiInferSyncResponse'
+  /ai/infer-async:
+    post:
+      tags: [AI Gateway Service]
+      summary: Submit asynchronous model inference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiInferAsyncRequest'
+      responses:
+        '202':
+          description: Task accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiInferAsyncResponse'
+  /ai/result/{task_id}:
+    get:
+      tags: [AI Gateway Service]
+      summary: Query asynchronous inference result
+      parameters:
+        - in: path
+          name: task_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Async result detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiResultResponse'
+  /ai/token-statistic:
+    get:
+      tags: [AI Gateway Service]
+      summary: Query token usage statistics
+      parameters:
+        - in: query
+          name: userId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Token statistics returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiTokenStatisticResponse'
+  /rag/store:
+    post:
+      tags: [RAG Service]
+      summary: Store content embeddings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RagStoreRequest'
+      responses:
+        '202':
+          description: Content accepted for embedding storage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RagStoreResponse'
+  /rag/retrieval:
+    post:
+      tags: [RAG Service]
+      summary: Retrieve semantically similar content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RagRetrievalRequest'
+      responses:
+        '200':
+          description: Retrieval results returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RagRetrievalResponse'
+components:
+  schemas:
+    CourseSummarizeRequest:
+      type: object
+      required: [fileId, courseId, userId, accessToken]
+      properties:
+        fileId: { type: string }
+        courseId: { type: string }
+        userId: { type: string }
+        accessToken: { type: string }
+        preferredLanguage: { type: string, default: English }
+    CourseSummarizeResponse:
+      type: object
+      required: [fileId, courseId, summaryText, generatedBy, traceId]
+      properties:
+        fileId: { type: string }
+        courseId: { type: string }
+        summaryText: { type: string }
+        generatedBy: { type: string }
+        traceId: { type: string }
+    CourseGenerateQuizRequest:
+      type: object
+      required: [courseId, fileId, questionCount, userId]
+      properties:
+        courseId: { type: string }
+        fileId: { type: string }
+        questionCount: { type: integer, minimum: 1, maximum: 20 }
+        difficulty: { type: string, enum: [easy, medium, hard] }
+        userId: { type: string }
+    CourseGenerateQuizResponse:
+      type: object
+      properties:
+        quizId: { type: string }
+        courseId: { type: string }
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizQuestion'
+    QuizQuestion:
+      type: object
+      properties:
+        questionId: { type: string }
+        stem: { type: string }
+        options:
+          type: array
+          items: { type: string }
+        answer: { type: string }
+        explanation: { type: string }
+    AssignmentGuidingRequest:
+      type: object
+      required: [assignmentId, courseId, userId, prompt]
+      properties:
+        assignmentId: { type: string }
+        courseId: { type: string }
+        userId: { type: string }
+        prompt: { type: string }
+        contextFileIds:
+          type: array
+          items: { type: string }
+    AssignmentGuidingResponse:
+      type: object
+      properties:
+        assignmentId: { type: string }
+        guidanceText: { type: string }
+        traceId: { type: string }
+    AssignmentGradingRequest:
+      type: object
+      required: [assignmentId, submissionId, graderId, rubric]
+      properties:
+        assignmentId: { type: string }
+        submissionId: { type: string }
+        graderId: { type: string }
+        submissionText: { type: string }
+        rubric:
+          type: array
+          items:
+            $ref: '#/components/schemas/RubricCriterion'
+    RubricCriterion:
+      type: object
+      properties:
+        criterionId: { type: string }
+        title: { type: string }
+        maxScore: { type: number, format: double }
+        description: { type: string }
+    AssignmentGradingResponse:
+      type: object
+      properties:
+        assignmentId: { type: string }
+        submissionId: { type: string }
+        totalScoreSuggestion: { type: number, format: double }
+        criterionFeedback:
+          type: array
+          items:
+            $ref: '#/components/schemas/CriterionFeedback'
+    CriterionFeedback:
+      type: object
+      properties:
+        criterionId: { type: string }
+        suggestedScore: { type: number, format: double }
+        feedback: { type: string }
+    AssignmentDetectAiRequest:
+      type: object
+      required: [assignmentId, submissionId, content]
+      properties:
+        assignmentId: { type: string }
+        submissionId: { type: string }
+        content: { type: string }
+    AssignmentDetectAiResponse:
+      type: object
+      properties:
+        submissionId: { type: string }
+        aiProbability: { type: number, format: double }
+        rationale: { type: string }
+        flagged: { type: boolean }
+    QaAskRequest:
+      type: object
+      required: [courseId, userId, question]
+      properties:
+        courseId: { type: string }
+        userId: { type: string }
+        historyId: { type: string }
+        question: { type: string }
+        topK: { type: integer, minimum: 1, maximum: 20, default: 5 }
+    QaAskResponse:
+      type: object
+      properties:
+        historyId: { type: string }
+        answer: { type: string }
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/QaCitation'
+        traceId: { type: string }
+    QaCitation:
+      type: object
+      properties:
+        sourceId: { type: string }
+        sourceTitle: { type: string }
+        excerpt: { type: string }
+    QaHistoryListResponse:
+      type: object
+      properties:
+        histories:
+          type: array
+          items:
+            $ref: '#/components/schemas/QaHistorySummary'
+    QaHistorySummary:
+      type: object
+      properties:
+        historyId: { type: string }
+        courseId: { type: string }
+        lastQuestion: { type: string }
+        updatedAt: { type: string, format: date-time }
+    QaHistoryDetailResponse:
+      type: object
+      properties:
+        historyId: { type: string }
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/QaMessage'
+    QaMessage:
+      type: object
+      properties:
+        role: { type: string, enum: [user, assistant] }
+        content: { type: string }
+        createdAt: { type: string, format: date-time }
+    ModerationTextRequest:
+      type: object
+      required: [text, userId, scene]
+      properties:
+        text: { type: string }
+        userId: { type: string }
+        scene: { type: string, enum: [discussion, announcement, submission] }
+    ModerationTextResponse:
+      type: object
+      properties:
+        flagged: { type: boolean }
+        categoryScores:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+        reason: { type: string }
+    ModerationFileRequest:
+      type: object
+      required: [fileId, userId, fileType]
+      properties:
+        fileId: { type: string }
+        userId: { type: string }
+        fileType: { type: string }
+        extractedText: { type: string }
+    ModerationFileResponse:
+      type: object
+      properties:
+        fileId: { type: string }
+        flagged: { type: boolean }
+        reason: { type: string }
+    AiInferSyncRequest:
+      type: object
+      required: [capability, prompt, traceId, userId]
+      properties:
+        capability: { type: string }
+        prompt: { type: string }
+        traceId: { type: string }
+        userId: { type: string }
+        metadata:
+          type: object
+          additionalProperties: { type: string }
+    AiInferSyncResponse:
+      type: object
+      properties:
+        capability: { type: string }
+        traceId: { type: string }
+        outputText: { type: string }
+        provider: { type: string }
+        model: { type: string }
+    AiInferAsyncRequest:
+      type: object
+      required: [capability, prompt, userId]
+      properties:
+        capability: { type: string }
+        prompt: { type: string }
+        userId: { type: string }
+        callbackUrl: { type: string, format: uri }
+        metadata:
+          type: object
+          additionalProperties: { type: string }
+    AiInferAsyncResponse:
+      type: object
+      properties:
+        taskId: { type: string }
+        status: { type: string, enum: [queued, running] }
+        acceptedAt: { type: string, format: date-time }
+    AiResultResponse:
+      type: object
+      properties:
+        taskId: { type: string }
+        status: { type: string, enum: [queued, running, succeeded, failed] }
+        outputText: { type: string }
+        errorMessage: { type: string }
+    AiTokenStatisticResponse:
+      type: object
+      properties:
+        userId: { type: string }
+        totalPromptTokens: { type: integer }
+        totalCompletionTokens: { type: integer }
+        totalCostUsd: { type: number, format: double }
+    RagStoreRequest:
+      type: object
+      required: [knowledgeBase, documentId, chunks]
+      properties:
+        knowledgeBase: { type: string }
+        documentId: { type: string }
+        metadata:
+          type: object
+          additionalProperties: { type: string }
+        chunks:
+          type: array
+          items:
+            $ref: '#/components/schemas/RagChunk'
+    RagChunk:
+      type: object
+      properties:
+        chunkId: { type: string }
+        text: { type: string }
+        sequence: { type: integer }
+    RagStoreResponse:
+      type: object
+      properties:
+        documentId: { type: string }
+        storedChunkCount: { type: integer }
+        status: { type: string, enum: [accepted, completed] }
+    RagRetrievalRequest:
+      type: object
+      required: [knowledgeBase, query]
+      properties:
+        knowledgeBase: { type: string }
+        query: { type: string }
+        topK: { type: integer, minimum: 1, maximum: 20, default: 5 }
+        filters:
+          type: object
+          additionalProperties: { type: string }
+    RagRetrievalResponse:
+      type: object
+      properties:
+        query: { type: string }
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RagRetrievalItem'
+    RagRetrievalItem:
+      type: object
+      properties:
+        chunkId: { type: string }
+        documentId: { type: string }
+        score: { type: number, format: double }
+        text: { type: string }

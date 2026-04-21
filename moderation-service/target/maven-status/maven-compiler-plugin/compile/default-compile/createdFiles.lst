@@ -1,0 +1,8 @@
+com/sma/moderation/service/ModerationService.class
+com/sma/moderation/ModerationServiceApplication.class
+com/sma/moderation/dto/ModerationTextRequest.class
+com/sma/moderation/dto/ModerationFileResponse.class
+com/sma/moderation/controller/ModerationController.class
+com/sma/moderation/service/ModerationServiceImpl.class
+com/sma/moderation/dto/ModerationFileRequest.class
+com/sma/moderation/dto/ModerationTextResponse.class

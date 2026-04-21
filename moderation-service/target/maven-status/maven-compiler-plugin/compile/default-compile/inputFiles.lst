@@ -1,0 +1,8 @@
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/ModerationServiceApplication.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/controller/ModerationController.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/dto/ModerationFileRequest.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/dto/ModerationFileResponse.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/dto/ModerationTextRequest.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/dto/ModerationTextResponse.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/service/ModerationService.java
+/Users/lvquanping/Project/SMA/moderation-service/src/main/java/com/sma/moderation/service/ModerationServiceImpl.java

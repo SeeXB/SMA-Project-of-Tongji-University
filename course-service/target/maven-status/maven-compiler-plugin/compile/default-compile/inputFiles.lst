@@ -1,0 +1,16 @@
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/CourseServiceApplication.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/config/HttpClientConfig.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/controller/CourseController.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/AiInferenceRequest.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/AiInferenceResponse.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/CanvasCourseContent.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/GenerateQuizRequest.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/GenerateQuizResponse.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/QuizQuestion.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/SummarizeCourseRequest.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/dto/SummarizeCourseResponse.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/integration/AiGatewayClient.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/integration/CanvasAdapterClient.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/integration/TokenVerifier.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/service/CourseSummarizationService.java
+/Users/lvquanping/Project/SMA/course-service/src/main/java/com/sma/course/service/impl/CourseSummarizationServiceImpl.java

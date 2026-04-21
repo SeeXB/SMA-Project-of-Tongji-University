@@ -1,0 +1,12 @@
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/AssignmentServiceApplication.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/controller/AssignmentController.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentAiDetectionRequest.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentAiDetectionResponse.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentCriterionFeedback.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentGradingRequest.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentGradingResponse.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentGuidingRequest.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentGuidingResponse.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/dto/AssignmentRubricCriterion.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/service/AssignmentService.java
+/Users/lvquanping/Project/SMA/assignment-service/src/main/java/com/sma/assignment/service/AssignmentServiceImpl.java

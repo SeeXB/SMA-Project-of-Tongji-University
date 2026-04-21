@@ -1,0 +1,11 @@
+com/sma/qa/dto/QaHistorySummary.class
+com/sma/qa/dto/QaCitation.class
+com/sma/qa/service/QaService.class
+com/sma/qa/dto/QaMessage.class
+com/sma/qa/service/QaServiceImpl.class
+com/sma/qa/controller/QaController.class
+com/sma/qa/dto/QaHistoryDetailResponse.class
+com/sma/qa/dto/QaAskRequest.class
+com/sma/qa/dto/QaAskResponse.class
+com/sma/qa/dto/QaHistoryListResponse.class
+com/sma/qa/QaServiceApplication.class
