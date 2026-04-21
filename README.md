@@ -24,3 +24,5 @@ MILVUS_VECTOR_DIM=1536
 ```bash
 bash ./run_services.sh
 ```
+
+4. For API document, please refer to [canvas-ai-subsystem-openapi.md](./specs/canvas-ai-subsystem-openapi.md)
