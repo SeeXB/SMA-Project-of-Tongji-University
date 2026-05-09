@@ -281,6 +281,16 @@ start_rag_service() {
     python3 -m venv "$RAG_DIR/.venv"
   fi
 
+  local rag_milvus_uri
+  rag_milvus_uri="${RAG_MILVUS_URI:-${MILVUS_URI:-$MILVUS_DATA_DIR/canvas_ai.db}}"
+  case "$rag_milvus_uri" in
+    http://*|https://*|tcp://*|grpc://*|unix:*|/*)
+      ;;
+    *)
+      rag_milvus_uri="$ROOT_DIR/$rag_milvus_uri"
+      ;;
+  esac
+
   echo "Installing RAG dependencies..."
   "$RAG_DIR/.venv/bin/pip" install -r "$RAG_DIR/requirements.txt" >/dev/null
 
@@ -292,7 +302,7 @@ start_rag_service() {
     export OPENAI_BASE_URL="${OPENAI_BASE_URL:-}"
     export EMBEDDING_MODEL="${EMBEDDING_MODEL:-text-embedding-3-small}"
     export MILVUS_MODE="${MILVUS_MODE:-lite}"
-    export RAG_MILVUS_URI="${RAG_MILVUS_URI:-${MILVUS_URI:-$MILVUS_DATA_DIR/canvas_ai.db}}"
+    export RAG_MILVUS_URI="$rag_milvus_uri"
     export MILVUS_TOKEN="${MILVUS_TOKEN:-}"
     export MILVUS_COLLECTION_PREFIX="${MILVUS_COLLECTION_PREFIX:-canvas_rag_}"
     export MILVUS_VECTOR_DIM="${MILVUS_VECTOR_DIM:-1536}"

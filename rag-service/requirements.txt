@@ -6,3 +6,4 @@ langchain==0.3.23
 langchain-openai==0.3.14
 pymilvus[milvus-lite]==2.5.6
 httpx==0.28.1
+setuptools<81

@@ -33,6 +33,7 @@ class RagRetrievalItem(BaseModel):
     document_id: str = Field(..., alias="documentId")
     score: float
     text: str
+    metadata: dict[str, str] = Field(default_factory=dict)
 
 
 class RagRetrievalResponse(BaseModel):

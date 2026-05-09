@@ -96,6 +96,11 @@ class InferenceService:
                 "You are an academic assistant. Summarize the provided course slides into a concise, "
                 "student-friendly overview with key takeaways."
             )
+        elif request.capability == "qa":
+            system_instruction = (
+                "You are an academic teaching assistant. Answer the student's question with high factual accuracy, "
+                "prioritize the retrieved course context, and keep the explanation concise and easy to understand."
+            )
         else:
             system_instruction = "You are a helpful academic AI assistant."
 

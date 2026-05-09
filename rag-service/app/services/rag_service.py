@@ -1,5 +1,7 @@
 import re
 import os
+import math
+import hashlib
 from functools import lru_cache
 from typing import Any, Dict, List
 
@@ -23,19 +25,22 @@ class RagService:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self._connect()
-        self._embeddings = OpenAIEmbeddings(
-            api_key=settings.openai_api_key,
-            base_url=settings.openai_base_url,
-            model=settings.embedding_model,
-        )
+        self._embeddings = None
+        if settings.embedding_provider.lower() == "openai":
+            self._embeddings = OpenAIEmbeddings(
+                api_key=settings.openai_api_key,
+                base_url=settings.openai_base_url,
+                model=settings.embedding_model,
+            )
 
     async def store(self, request: RagStoreRequest) -> RagStoreResponse:
-        collection_name = self._collection_name(request.knowledge_base)
-        collection = self._ensure_collection(collection_name)
-        self._delete_existing_document(collection, request.document_id)
-
         texts = [chunk.text for chunk in request.chunks]
-        vectors = self._embeddings.embed_documents(texts)
+        vectors = self._embed_documents(texts)
+        vector_dim = len(vectors[0]) if vectors else self.settings.milvus_vector_dim
+
+        collection_name = self._collection_name(request.knowledge_base)
+        collection = self._ensure_collection(collection_name, vector_dim)
+        self._delete_existing_document(collection, request.document_id)
 
         payload = [
             [chunk.chunk_id for chunk in request.chunks],
@@ -57,10 +62,10 @@ class RagService:
 
     async def retrieval(self, request: RagRetrievalRequest) -> RagRetrievalResponse:
         collection_name = self._collection_name(request.knowledge_base)
-        collection = self._ensure_collection(collection_name)
+        collection = self._ensure_collection(collection_name, self.settings.milvus_vector_dim)
         collection.load()
 
-        query_vector = self._embeddings.embed_query(request.query)
+        query_vector = self._embed_query(request.query)
         results = collection.search(
             data=[query_vector],
             anns_field="embedding",
@@ -84,6 +89,7 @@ class RagService:
                     documentId=entity.get("document_id"),
                     score=float(hit.distance),
                     text=entity.get("text"),
+                    metadata=entity.get("metadata") or {},
                 )
             )
 
@@ -100,11 +106,37 @@ class RagService:
             token=self.settings.milvus_token,
         )
 
+    def _embed_documents(self, texts: List[str]) -> List[List[float]]:
+        if self.settings.embedding_provider.lower() == "openai":
+            return self._embeddings.embed_documents(texts)
+        return [self._local_embed(text) for text in texts]
+
+    def _embed_query(self, text: str) -> List[float]:
+        if self.settings.embedding_provider.lower() == "openai":
+            return self._embeddings.embed_query(text)
+        return self._local_embed(text)
+
+    def _local_embed(self, text: str) -> List[float]:
+        dimension = self.settings.milvus_vector_dim
+        vector = [0.0] * dimension
+        tokens = re.findall(r"[a-zA-Z0-9]+", text.lower())
+        if not tokens:
+            return vector
+
+        for token in tokens:
+            index = int(hashlib.md5(token.encode("utf-8")).hexdigest(), 16) % dimension
+            vector[index] += 1.0
+
+        norm = math.sqrt(sum(value * value for value in vector))
+        if norm == 0:
+            return vector
+        return [value / norm for value in vector]
+
     def _collection_name(self, knowledge_base: str) -> str:
         normalized = re.sub(r"[^a-zA-Z0-9_]", "_", knowledge_base).lower()
         return f"{self.settings.milvus_collection_prefix}{normalized}"
 
-    def _ensure_collection(self, collection_name: str) -> Collection:
+    def _ensure_collection(self, collection_name: str, vector_dim: int) -> Collection:
         if utility.has_collection(collection_name):
             collection = Collection(collection_name)
             collection.load()
@@ -118,7 +150,7 @@ class RagService:
                 FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=8192),
                 FieldSchema(name="sequence", dtype=DataType.INT64),
                 FieldSchema(name="metadata", dtype=DataType.JSON),
-                FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=self.settings.milvus_vector_dim),
+                FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=vector_dim),
             ],
             description="Canvas RAG chunks",
         )

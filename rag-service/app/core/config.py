@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     app_name: str = "rag-service"
     openai_api_key: Optional[str] = None
     openai_base_url: Optional[str] = None
+    embedding_provider: str = "openai"
     embedding_model: str = "text-embedding-3-small"
     milvus_mode: str = "lite"
     rag_milvus_uri: str = ".run/milvus/canvas_ai.db"
