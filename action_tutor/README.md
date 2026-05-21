@@ -123,6 +123,11 @@ System prompt (see `prompts/nudge_system.txt`) enforces:
 - No full solutions
 - Concise, single-concept focus
 
+Output hygiene guard (post-generation):
+- Detects and sanitizes content that should not reach students
+- Covers AI self-references, prompt residue, and language mismatch at text edges
+- Returns `output_hygiene` metadata in API response for observability
+
 ---
 
 ## Repository Layout
@@ -192,7 +197,7 @@ python frontend/gradio_ui.py
 ```
 
 Default endpoints:
-- Flask API: `http://127.0.0.1:5000`
+- Flask API: `http://127.0.0.1:6000`
 - Gradio UI: `http://127.0.0.1:7860`
 
 ---
@@ -213,6 +218,10 @@ Example payload:
   "error_history": ["forgot chain rule", "wrong derivative sign"]
 }
 ```
+
+`POST /generate_nudge` response includes:
+- `nudge`: sanitized student-facing nudge text
+- `output_hygiene`: `{ "is_clean": bool, "issues": string[], "sanitized": bool }`
 
 ---
 
