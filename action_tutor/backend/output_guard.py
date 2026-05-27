@@ -34,7 +34,7 @@ class NudgeOutputGuard:
         re.compile(r"(let me know if you want another nudge[.?!]?)\s*$", re.IGNORECASE),
     ]
 
-    _SPLIT_PUNCT = re.compile(r"[。！？.!?\n]")
+    _SPLIT_PUNCT = re.compile(r"[。！？.!?\n:：]")
 
     def review(self, text: str) -> Dict[str, Any]:
         raw = str(text or "").strip()
@@ -96,21 +96,19 @@ class NudgeOutputGuard:
         if dominant == "unknown":
             return False, False
 
-        start = text[:28]
-        end = text[-28:]
-        start_script = self._dominant_script(start)
-        end_script = self._dominant_script(end)
-        opposite = self._opposite_script(dominant)
-        start_opposite_ratio = self._script_ratio(start, opposite)
-        end_opposite_ratio = self._script_ratio(end, opposite)
+        clauses = [part.strip() for part in self._SPLIT_PUNCT.split(text) if part.strip()]
+        if not clauses:
+            return False, False
 
-        start_mismatch = (
-            start_script not in ("unknown", dominant) and self._has_signal_chars(start, start_script)
-        ) or (self._has_signal_chars(start, opposite) and start_opposite_ratio >= 0.35)
-        end_mismatch = (
-            end_script not in ("unknown", dominant) and self._has_signal_chars(end, end_script)
-        ) or (self._has_signal_chars(end, opposite) and end_opposite_ratio >= 0.35)
+        start_mismatch = self._is_edge_clause_mismatch(clauses[0], dominant)
+        end_mismatch = len(clauses) > 1 and self._is_edge_clause_mismatch(clauses[-1], dominant)
         return start_mismatch, end_mismatch
+
+    def _is_edge_clause_mismatch(self, clause: str, dominant: str) -> bool:
+        clause_script = self._dominant_script(clause)
+        if clause_script in ("unknown", dominant):
+            return False
+        return self._has_signal_chars(clause, clause_script)
 
     @staticmethod
     def _opposite_script(script: str) -> str:

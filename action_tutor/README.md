@@ -59,6 +59,21 @@ It focuses on nudges, micro-tasks, and reflection instead of full explanations.
 
 ---
 
+### MAS-lite flow
+
+The current prototype keeps the original tutoring pipeline small, but now makes the agent roles explicit:
+
+- `TutorOrchestrator`: central coordinator for request routing, aggregation, and fallback
+- `TraceIndexer`: trace interpretation and concept indexing
+- `GapDetector`: weak-concept diagnosis
+- `NudgePlanner`: target concept selection + nudge type planning
+- `NudgeEngine`: nudge generation
+- `Output Hygiene Agent`: post-generation review and one-shot reflection / fallback
+
+This is still a lightweight prototype rather than a full MAS runtime, but it is now structured around clear agent responsibilities and traceable orchestration.
+
+---
+
 ## Functional Design
 
 ### 1) Trace Indexer
@@ -168,14 +183,16 @@ pip install -r requirements.txt
 ### 2) .env
 Create a `.env` file in the project root:
 ```env
-OPENAI_API_KEY=your_key
-OPENAI_BASE_URL=https://api.your-provider.com/v1
-OPENAI_MODEL=your-model-name
+DEEPSEEK_API_KEY=your_deepseek_api_key
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
 Notes:
-- `OPENAI_BASE_URL` and `OPENAI_MODEL` are optional and support OpenAI-compatible providers.
-- If `OPENAI_API_KEY` is missing, the system falls back to a deterministic nudge generator (for offline demo).
+- Put this file at `action_tutor/.env`, in the same directory as `app.py`.
+- `DEEPSEEK_BASE_URL` and `DEEPSEEK_MODEL` are optional. The current defaults are `https://api.deepseek.com` and `deepseek-v4-flash`.
+- The code still accepts `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `OPENAI_MODEL` as backward-compatible fallbacks.
+- If the API key is missing or the request fails, the system falls back to a deterministic nudge generator for demo use.
 
 ---
 
@@ -222,12 +239,19 @@ Example payload:
 `POST /generate_nudge` response includes:
 - `nudge`: sanitized student-facing nudge text
 - `output_hygiene`: `{ "is_clean": bool, "issues": string[], "sanitized": bool }`
+- `selected_plan`: selected concept, reason, and `nudge_type`
+- `agent_trace`: lightweight execution trace for the main agent roles
+- `task_id`, `latency_ms`, `reflection`: observability fields for debugging and demo use
 
 ---
 
 ## Project Status
 **Implemented**:
 - Full Trace → Gap → Nudge pipeline
+- MAS-lite `TutorOrchestrator` with explicit agent roles
+- `NudgePlanner` for target selection and nudge-type routing
+- Output hygiene review with one-shot reflection and fallback
+- Agent trace / task-level observability fields
 - Local MiniLM embeddings
 - ChromaDB storage + fallback
 - Flask API orchestration

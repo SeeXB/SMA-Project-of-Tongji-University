@@ -28,7 +28,7 @@ def run_pipeline(
 	notes: str,
 	exercise_logs_raw: str,
 	error_history_raw: str,
-) -> tuple[str, str, str]:
+) -> tuple[str, str, str, str]:
 	try:
 		trace = {
 			"student_id": student_id or "stu001",
@@ -40,13 +40,15 @@ def run_pipeline(
 		weak = result.get("weak_concepts", [])
 		nudge = result.get("nudge", "")
 		output_hygiene = result.get("output_hygiene", {})
+		generation_info = result.get("generation_info", {})
 		return (
 			json.dumps(weak, ensure_ascii=False, indent=2),
 			nudge,
 			json.dumps(output_hygiene, ensure_ascii=False, indent=2),
+			json.dumps(generation_info, ensure_ascii=False, indent=2),
 		)
 	except (json.JSONDecodeError, error.URLError, TimeoutError, ValueError) as exc:
-		return "[]", f"请求失败: {exc}", "{}"
+		return "[]", f"请求失败: {exc}", "{}", "{}"
 
 
 def build_ui() -> gr.Blocks:
@@ -71,11 +73,12 @@ def build_ui() -> gr.Blocks:
 		weak_out = gr.Code(language="json", label="Detected Weak Concepts")
 		nudge_out = gr.Textbox(label="Generated Nudge")
 		output_hygiene = gr.Code(language="json", label="Output Hygiene")
+		generation_info = gr.Code(language="json", label="Generation Info")
 
 		run_btn.click(
 			fn=run_pipeline,
 			inputs=[base_url, student_id, notes, exercise_logs, error_history],
-			outputs=[weak_out, nudge_out, output_hygiene],
+			outputs=[weak_out, nudge_out, output_hygiene, generation_info],
 		)
 
 	return demo
